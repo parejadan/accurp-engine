@@ -9,16 +9,16 @@ How to Use
 Import the "Predictor" file as a regular python library, then create a LinRegress object. The construct at the moment is very fundamental so no input parameters are needed. After an object is created, assuming this is the first use, you must train the learner. 
 
 To train call the train() by passing 4 parameters:
-> steps - number of descents the learner takes against the training data for example 400.
-> deg - exponential degree difference training data is allowed to have. For default case just pass the value 2.
-> trainSRC - string of file name containing training data. File extension needs to be included in the string
-> delim - delimiter that separates values within the training data. For example if the file extension is csv, then the data is assumed to be seprated by a comma. Then the value for delim parameter is ','.
+* steps - number of descents the learner takes against the training data for example 400.
+* deg - exponential degree difference training data is allowed to have. For default case just pass the value 2.
+* trainSRC - string of file name containing training data. File extension needs to be included in the string
+* delim - delimiter that separates values within the training data. For example if the file extension is csv, then the data is assumed to be seprated by a comma. Then the value for delim parameter is ','.
 
 Module does not return anything, instead it stores the trained coefficients as the theta attribute. To checkout the trained coefficients use the dot operator with the object. Please note, file for training data for a regression algorithm should only contain numerical values. 
 
 after training call the predict() by passing 1 parameter:
-> dat - string with the same delimiter character for separating values as the training data.
-> Method returns a numerical value which is the predicted result. 
+* dat - string with the same delimiter character for separating values as the training data.
+* Method returns a numerical value which is the predicted result. 
 
 
 Testing the Engine
