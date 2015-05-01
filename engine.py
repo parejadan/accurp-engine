@@ -1,64 +1,71 @@
 #!/usr/bin/python
 from numpy import loadtxt, append, array;
 from Predictors import NaiveBayes;
-from math import log10;
+from pickle import load, dump;
+from sys import argv;
+import os, urllib, json;
 
-def loadData(datSRC, delim):
-	return loadtxt(datSRC, delimiter=delim);
+os_bracket = '/';
 
-def checkScales(data, deg):
-	'If factors have varaying scales, module recommends to normalize data'
-	cols = data.shape[1];
-	mx, mn = [], [];
-	for i in range(cols): #find the exponent value for each columns' max min
-		mx.append( abs( log10( max( data[:, i] ) ) ) );
-		mn.append( abs( log10( min( data[:, i] ) ) ) );
+def loadData(datSRC, delim, typ):
+	return loadtxt(datSRC, delimiter=delim, dtype = typ);
 
-	for i in range(cols-1): #determine if columns deviate more than deg from each other
-		for j in range(i+1, cols):
-			if abs(mx[i]-mx[j]) > deg or abs(mn[i]-mn[j]) > deg:
-				return True; #data needs to be normalized
-	return False; #data does not need to be normalized
+def googleSearch(search):
+	'work around for google search api - i think...'
+	query = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=%s";#search api? free to use
+	results = urllib.urlopen( query % (search) );
+	json_res = json.loads( results.read() );
+	return int(json_res['responseData']['cursor']['estimatedResultCount']); #returns number of estimated search results
 
-#training data for classifier (actual translation data that was collected)
-print '\n>> Loading translation data for training classifier...'
-data = loadData('eng-to-rus.csv', ',');
+def loadClassifier(objFile, path = 'training-data'):
+	'loads an already saved classifier, path by default os training data directory'
+	if os.path.isfile( (path + os_bracket + objFile) ):
+		return NaiveBayes( load( open(path + os_bracket + objFile) ) );
+	else:
+		#print path + os_bracket + objFile;
+		print '\n[!NO CLASSIFIFER IS SAVED YET!]\n'
+		return None;
 
-print '>> training classifier with data...'
-nv = NaiveBayes();
-nv.summarizeByClass(data); #trained aspect is saved within the nv object
+def getClassifier(trainDat = 'train-dat.csv', delim = ',', path = 'training-data'):
+	'Trains a new classifier, if user does not want ao specific training data, use default'
+	data = loadData( (path + os_bracket + trainDat) , delim, float); #load training data
+	nv = NaiveBayes();
+	nv.summarizeByClass(data); #train classififer
+	f = open( (path + os_bracket +'classifier.pickle'), 'wb');
+	dump(nv.summaries, f); #save trained classififer as python pickle
+	return nv; #return trained classififer
 
-print '>> Ready for making predictions...'
-test_input_one = [102,5];
-prediction = '';
-label, prob = nv.predict(test_input_one);
-if label == 1:
-	prediction = 'good';
-else:
-	prediction = 'bad';
-print '\n>> Predicted translation accuracy for a string of 102 chars and a frequency class of 5 is: ';
-print '>> ', prediction, 'translation with a', prob*100, '%  confidence probability';
+def discretizedFreq(frequency):
+	if frequency < 1250: return 1;
+	if frequency < 4500: return 2;
+	if frequency < 8000: return 3;
+	if frequency < 16000: return 4;
+	if frequency < 35000: return 5;
+	return 6;
 
+def main():
+	#argv[1] -> name of file that contains user input (should only contain 3 lines)
+	#srcTxt -> input string user needed to translate - 1st line
+	#dstTxt -> translated text online app provided - 2nd line
+	srcTxt, dstTxt = loadData(argv[1], '\n', str);
+	classifier = loadClassifier('classifier.pickle');
+	if classifier is None:
+		classifier = getClassifier('eng-to-rus.csv');
 
-test_input_two = [9,6];
-prediction = '';
-label, prob = nv.predict(test_input_two);
-if label == 1:
-	prediction = 'good';
-else:
-	prediction = 'bad';
-print '\n>> Predicted translation accuracy for a string of 9 chars and a frequency class of 6 is: ';
-print '>> ', prediction, 'translation with a', prob*100, '%  confidence probability';
+	frequency = discretizedFreq( googleSearch(dstTxt) );
+	textSize = len(srcTxt);
 
-#self.rows, self.cols = data.shape;
+	label, prob = classifier.predict( [textSize, frequency] );
+	prediction = ''; prob *= 100; #convert prob into a percentage
+	if label == 1: prediction = 'good';
+	else: prediction = 'bad';
 
-#X = data[:, :cols-1]; #first columns are features for the outcome
-#self.Y = data[:, cols-1]; #last column is outcome
-#self.Y.shape = [rows, 1]; #properly define the shape of y
-#self.Y = self.Y;
+	print '\n>> source text: %s' % srcTxt;
+	print '>> translated text: %s' % dstTxt;
+	print '>> Predicted translation type: %s' % prediction;
+	print '>> Prediction confidence percentage: %f percent\n' % prob;
 
-#if checkScales(X, deg): #check if data needs to be normalized
-#	X = normalize(X);
+#if-condition executes main functions when file used directly
+if __name__ == '__main__':
+	main();
 
-#dat = fromiter(dat.split(self.delim), dtype = float); #split dat string to np.array for prediction
-##################################################################

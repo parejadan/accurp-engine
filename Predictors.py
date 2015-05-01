@@ -1,6 +1,21 @@
 #!/usr/bin/python
 from numpy import ones, append, array, mean, std;
 from math import sqrt, exp, pi;
+from math import log10;
+
+def checkScales(data, deg):
+	'If factors have varaying scales, module recommends to normalize data'
+	cols = data.shape[1];
+	mx, mn = [], [];
+	for i in range(cols): #find the exponent value for each columns' max min
+		mx.append( abs( log10( max( data[:, i] ) ) ) );
+		mn.append( abs( log10( min( data[:, i] ) ) ) );
+
+	for i in range(cols-1): #determine if columns deviate more than deg from each other
+		for j in range(i+1, cols):
+			if abs(mx[i]-mx[j]) > deg or abs(mn[i]-mn[j]) > deg:
+				return True; #data needs to be normalized
+	return False; #data does not need to be normalized
 
 def calcMu(nums):
 	return sum(nums)/float(len(nums));
@@ -21,8 +36,12 @@ def normalize(data):
 	return norm, mu, sig;
 
 class NaiveBayes(object):
-	def __init__(self):
-		'some initializer for naive bayes classifier'
+	def __init__(self, summaries = None):
+		'If creating an empty constructor, pass no arguments \
+		otherwise you can pass already summarized training data for \
+		making predictions.'
+		if summaries is not None:
+			self.summaries = summaries;
 
 	def separateByClass(self, data):
 		'separates training data by their outcome class and creates a dictonar \
@@ -137,3 +156,14 @@ class LinRegress(object):
 			datum[:, 1:] = dat;
 
 			return datum.dot(self.theta)[0][0]; #compute prediction
+
+#X = data[:, :cols-1]; #first columns are features for the outcome
+#self.Y = data[:, cols-1]; #last column is outcome
+#self.Y.shape = [rows, 1]; #properly define the shape of y
+#self.Y = self.Y;
+
+#if checkScales(X, deg): #check if data needs to be normalized
+#	X = normalize(X);
+
+#dat = fromiter(dat.split(self.delim), dtype = float); #split dat string to np.array for prediction
+##################################################################
