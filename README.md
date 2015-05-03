@@ -20,8 +20,8 @@ Momentarily the training data is strucutred in the following format:
 
 <table>
 	<tr>
-		<td> Character Length </td>
-		<td> Discretized Phrase Frequency </td>
+		<td> Character  Length </td>
+		<td> Discretized Sentence Frequency </td>
 		<!--<td> Source Language ID </td>-->
 		<!--<td> Target Language ID </td>-->
 		<td> Equilibrium Score </td>
@@ -43,6 +43,11 @@ Momentarily the training data is strucutred in the following format:
 	</tr>
 
 </table>
+
+* Character length considers is self explanatory, only that it also considers spaces but excludes non-alphabetic characters
+* a sentence's frequency is discretized into 6 possible ranges it can fall under; 1 being very low 6 being very high
+* Equilibrium Score is the percentage of the original text that remains after a reverse translation. For example consider the srcText "I like cats", where L1 = English and L2 = some-arbitrary-language. If srcTxt is translated from L1 to L2 to produce dstText, passes the coherency 
+test, and then reversed translated (L2 to L1) which outputs “I love cats”, the equilibrium score is 7/11 ~ 0.63
 
 Testing the Engine
 ------------------
