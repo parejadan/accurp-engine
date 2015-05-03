@@ -18,7 +18,7 @@ Data Description
 ----------------
 Momentarily the training data is strucutred in the following format:
 
-<table>
+<table style="text-align: center">
 	<tr>
 		<td> Character Length </td>
 		<td> Discretized Phrase Frequency </td>
