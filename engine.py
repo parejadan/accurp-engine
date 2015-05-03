@@ -10,6 +10,12 @@ os_brack = '/'; #directory separator for os engine is running on
 def loadData(datSRC, delim, typ):
 	return loadtxt(datSRC, delimiter=delim, dtype = typ);
 
+def saveRawInput(rawInput):
+	datName ='collected-data.csv';
+	f = open(datName, 'a');
+	f.write(rawInput);
+	f.close();
+
 def googleSearch(search):
 	'work around for google search api - i think...'
 
@@ -33,6 +39,7 @@ def getClassifier(data, languages):
 	nv.db['languages'] = languages;
 	f = open( 'classifier.pickle', 'wb');
 	dump(nv, f); #save trained classififer as python pickle
+	f.close();
 	return nv; #return trained classififer
 
 def descretizeFreq(frequency):
@@ -71,8 +78,9 @@ def main():
 	#dstTxt -> translated text online app provided - 2nd line
 	srcTxt, dstTxt, srcLan, dstLan = loadData(argv[1], '\n', str); #use this interface for testing purposes
 	#junk, srcTxt, dstTxt, srcLan, dstLan = arvg; #use this interface for production use
-	src_id = descretizeLang(srcTxt, classifier.db['languages']);
-	dst_id = descretizeLang(dstTxt, classifier.db['languages']);
+	saveRawInput( srcTxt+','+dstTxt+','+srcLan+','+dstLan+'\n' );
+	src_id = descretizeLang(srcLan, classifier.db['languages']);
+	dst_id = descretizeLang(dstLan, classifier.db['languages']);
 	frequency = descretizeFreq( googleSearch(dstTxt) );
 	textSize = len(srcTxt);
 
@@ -89,4 +97,3 @@ def main():
 #if-condition executes main functions when file used directly
 if __name__ == '__main__':
 	main();
-
