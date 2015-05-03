@@ -18,12 +18,6 @@ Data Description
 ----------------
 Momentarily the training data is strucutred in the following format:
 
-| Character Length | Discretized Phrase Frequency | Equilibrium Score |
-|---------------------------------------------------------------------|
-| 47 | 6 | 0.88 |
-| 102 | 5 | 0.16 |
-| 14 | 6 | 0.86 |
------------------
 <table>
 	<tr>
 		<td> Character Length </td>
