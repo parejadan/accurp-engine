@@ -2,7 +2,7 @@
 
 Intro
 -----
-This project takes a machine learning approach to evaluating translation application. The objective for this is to provide users of automated translation applications some level of confidence when using them. Currently, the "engine" relies on a single machine learning algorithm (Naive Bayes), but future updates will include additional learners which can be located within the "Predictors.py" file. The project's goal is to obtain a deeper understanding of machine learning (hence coding algorithms from scratch) and exercise python hacking skills, all while talking a practical problem. If you find any type issues with the  please feel free to contact me, any feedback is appreciate. 
+This project takes a machine learning approach to evaluating translation application. The objective for this is to provide users of automated translation applications some level of confidence when using them. Currently, the "engine" relies on a single machine learning algorithm (Naive Bayes), but future updates will include additional learners which can be located within the "Predictors.py" file. The project's goal is to obtain a deeper understanding of machine learning (hence coding algorithms from scratch) and exercise python hacking skills, all while talking a practical problem. If you find any type issues with the software please feel free to contact me, any feedback is appreciate. 
 
 Overview
 --------
@@ -18,7 +18,13 @@ Data Description
 ----------------
 Momentarily the training data is strucutred in the following format:
 
-<table style="text-align: center">
+| Character Length | Discretized Phrase Frequency | Equilibrium Score |
+|---------------------------------------------------------------------|
+| 47 | 6 | 0.88 |
+| 102 | 5 | 0.16 |
+| 14 | 6 | 0.86 |
+-----------------
+<table>
 	<tr>
 		<td> Character Length </td>
 		<td> Discretized Phrase Frequency </td>
