@@ -1,6 +1,6 @@
 #!/usr/bin/python
 from numpy import loadtxt, append, array;
-from Predictors import NaiveBayes;
+from predictors import NaiveBayes;
 from pickle import load, dump;
 from sys import argv;
 import os, urllib, json, time;
@@ -42,7 +42,7 @@ def getClassifier(data, languages):
 	f.close();
 	return nv; #return trained classififer
 
-def descretizeFreq(frequency):
+def discretizeFreq(frequency):
 	if frequency < 1250: return 1;
 	if frequency < 4500: return 2;
 	if frequency < 8000: return 3;
@@ -50,14 +50,14 @@ def descretizeFreq(frequency):
 	if frequency < 35000: return 5;
 	return 6;
 
-def descretizeTarget(data, threshold):
+def discretizeTarget(data, threshold):
 	rows, cols = data.shape;
 	for i in range(rows):
 		if (data[i][-1] >= threshold): data[i][-1] = 1;
 		else: data[i][-1] = 0;
 	return data;
 
-def descretizeLang(lang, languages):
+def discretizeLang(lang, languages):
 	index = 1;
 	for l in languages:
 		if l == lang:
@@ -67,21 +67,21 @@ def descretizeLang(lang, languages):
 
 def main():
 
-	classifier = loadClassifier();
-	if classifier is None:
-		examples = loadData('resources/training-examples.csv', ',', float);
-		examples = descretizeTarget(examples, 0.68);
-		classifier = getClassifier(examples, loadData('resources/languages.txt', '\n', str));
+	#classifier = loadClassifier();
+	#if classifier is None:
+	examples = loadData('resources/training-examples.csv', ',', float);
+	examples = discretizeTarget(examples, 0.68);
+	classifier = getClassifier(examples, loadData('resources/languages.txt', '\n', str));
 
 	#argv[1] -> name of file that contains user input (should only contain 3 lines)
 	#srcTxt -> input string user needed to translate - 1st line
 	#dstTxt -> translated text online app provided - 2nd line
 	srcTxt, dstTxt, srcLan, dstLan = loadData(argv[1], '\n', str); #use this interface for testing purposes
 	#junk, srcTxt, dstTxt, srcLan, dstLan = arvg; #use this interface for production use
-	saveRawInput( srcTxt+','+dstTxt+','+srcLan+','+dstLan+'\n' );
-	src_id = descretizeLang(srcLan, classifier.db['languages']);
-	dst_id = descretizeLang(dstLan, classifier.db['languages']);
-	frequency = descretizeFreq( googleSearch(dstTxt) );
+	#saveRawInput( srcTxt+','+dstTxt+','+srcLan+','+dstLan+'\n' );
+	src_id = discretizeLang(srcLan, classifier.db['languages']);
+	dst_id = discretizeLang(dstLan, classifier.db['languages']);
+	frequency = discretizeFreq( googleSearch(dstTxt) );
 	textSize = len(srcTxt);
 
 	label, prob = classifier.predict( [textSize, frequency, src_id, dst_id] );
@@ -92,7 +92,7 @@ def main():
 	print '\n>> source text: %s' % srcTxt;
 	print '>> translated text: %s' % dstTxt;
 	print '>> Predicted translation type: %s' % prediction;
-	print '>> Prediction confidence percentage: %f percent\n' % prob;
+	print '>> Prediction confidence percentage of', prob;
 
 #if-condition executes main functions when file used directly
 if __name__ == '__main__':

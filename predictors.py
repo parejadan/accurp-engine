@@ -70,8 +70,9 @@ class NaiveBayes(object):
 
 	def calcProbability(slef, x, mu, sig): #formula is gaussian probability density function
 		'computes the probability of a single feature to occur'
+		print x, mu, sig;
 		exponent = exp( -( pow(x-mu, 2) / ( 2*pow(sig, 2) ) ) );
-		return (1 / (sqrt(2*pi) * sig)) * exponent;
+		return (1 / (sqrt(2.0*pi) * sig)) * exponent;
 
 	def calcClassProbabilities(self, inputVector):
 		'computes probability of all class to occur for the given feature values'
@@ -90,6 +91,7 @@ class NaiveBayes(object):
 		probabilities = self.calcClassProbabilities(inputVector);
 		label, maxProb = None, 0;
 		for classVal, prob in probabilities.iteritems():
+			print classVal, prob;
 			if prob > maxProb:
 				label = classVal;
 				maxProb = prob;
