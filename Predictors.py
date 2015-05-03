@@ -36,12 +36,9 @@ def normalize(data):
 	return norm, mu, sig;
 
 class NaiveBayes(object):
-	def __init__(self, summaries = None):
-		'If creating an empty constructor, pass no arguments \
-		otherwise you can pass already summarized training data for \
-		making predictions.'
-		if summaries is not None:
-			self.summaries = summaries;
+	def __init__(self):
+		self.summaries = 0;
+		self.db = {}; #dictonary database of additonal information for classification and prediction
 
 	def separateByClass(self, data):
 		'separates training data by their outcome class and creates a dictonar \
