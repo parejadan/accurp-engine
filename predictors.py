@@ -45,8 +45,7 @@ class NaiveBayes(object):
 		 where the class is the key, and training examples are items'
 
 		partedClasses = {} #partition data by their respective outcome class (last column)
-		for i in range( len(data) ):
-			dat = data[i];
+		for dat in data:
 			if dat[-1] not in partedClasses:
 				partedClasses[ dat[-1] ] = [] #create a dictionary entry for the new class type
 			partedClasses[ dat[-1] ].append( dat[:-1] ) #append values for features
@@ -70,7 +69,7 @@ class NaiveBayes(object):
 
 	def calcProbability(slef, x, mu, sig): #formula is gaussian probability density function
 		'computes the probability of a single feature to occur'
-		print x, mu, sig;
+		#print x, mu, sig;
 		exponent = exp( -( pow(x-mu, 2) / ( 2*pow(sig, 2) ) ) );
 		return (1 / (sqrt(2.0*pi) * sig)) * exponent;
 
@@ -91,7 +90,7 @@ class NaiveBayes(object):
 		probabilities = self.calcClassProbabilities(inputVector);
 		label, maxProb = None, 0;
 		for classVal, prob in probabilities.iteritems():
-			print classVal, prob;
+			#print classVal, prob;
 			if prob > maxProb:
 				label = classVal;
 				maxProb = prob;

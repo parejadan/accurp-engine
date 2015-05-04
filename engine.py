@@ -6,26 +6,28 @@ from sys import argv;
 import os, urllib, json, time;
 
 os_brack = '/'; #directory separator for os engine is running on
+categories = [1250, 4500, 8000, 16000, 35000];
 
 def loadData(datSRC, delim, typ):
 	return loadtxt(datSRC, delimiter=delim, dtype = typ);
 
 def saveRawInput(rawInput):
+	'save user input for reuse as future training data'
 	datName ='collected-data.csv';
 	f = open(datName, 'a');
 	f.write(rawInput);
 	f.close();
 
 def googleSearch(search):
-	'work around for google search api - i think...'
-
+	'google search api'
 	query = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=%s";#search api? free to use
 	results = urllib.urlopen( query % (search) );
 	json_res = json.loads( results.read() );
 	return int(json_res['responseData']['cursor']['estimatedResultCount']); #returns number of estimated search results
 
 def loadClassifier(objFile = 'classifier.pickle', path = '.'):
-
+	'loads an already trained classifier. If no classifier is passed as \
+	parameter then it uses the default path and name'
 	if os.path.isfile( (path + os_brack + objFile) ):
 		return load( open(path + os_brack + objFile) );
 	else:
@@ -33,22 +35,22 @@ def loadClassifier(objFile = 'classifier.pickle', path = '.'):
 		print '\n[!NO CLASSIFIFER IS SAVED YET!]\n'
 		return None;
 
-def getClassifier(data, languages):
+def makeClassifier(data):
+	'trains a classifier with a given training data'
 	nv = NaiveBayes();
 	nv.summarizeByClass(data); #train classififer
-	nv.db['languages'] = languages;
-	f = open( 'classifier.pickle', 'wb');
-	dump(nv, f); #save trained classififer as python pickle
-	f.close();
+	#f = open( 'classifier.pickle', 'wb');
+	#dump(nv, f); #save trained classififer as python pickle
+	#f.close();
 	return nv; #return trained classififer
 
-def discretizeFreq(frequency):
-	if frequency < 1250: return 1;
-	if frequency < 4500: return 2;
-	if frequency < 8000: return 3;
-	if frequency < 16000: return 4;
-	if frequency < 35000: return 5;
-	return 6;
+def discretizeFreq(frequency, cats = categories):
+	'categorizes result hits from a google saerch query \
+	if no categories are passed, it uses the default defined'
+	for i in len(cats):
+		if frequency < cats[i]:
+			return i+1;
+	return len(cats)+1;
 
 def discretizeTarget(data, threshold):
 	rows, cols = data.shape;
@@ -65,34 +67,34 @@ def discretizeLang(lang, languages):
 		index += 1;
 	return None;
 
+
 def main():
 
 	#classifier = loadClassifier();
 	#if classifier is None:
-	examples = loadData('resources/training-examples.csv', ',', float);
-	examples = discretizeTarget(examples, 0.68);
-	classifier = getClassifier(examples, loadData('resources/languages.txt', '\n', str));
+	examples = loadData('resources/examples2-rand.csv', ',', float);
+	examples = discretizeTarget(examples, 0.60); #60% tollerance level for coherency test
+	size = len(examples);
+	trnprt = size/4.0;
+	tstprt = trnprt;
 
-	#argv[1] -> name of file that contains user input (should only contain 3 lines)
-	#srcTxt -> input string user needed to translate - 1st line
-	#dstTxt -> translated text online app provided - 2nd line
-	srcTxt, dstTxt, srcLan, dstLan = loadData(argv[1], '\n', str); #use this interface for testing purposes
-	#junk, srcTxt, dstTxt, srcLan, dstLan = arvg; #use this interface for production use
-	#saveRawInput( srcTxt+','+dstTxt+','+srcLan+','+dstLan+'\n' );
-	src_id = discretizeLang(srcLan, classifier.db['languages']);
-	dst_id = discretizeLang(dstLan, classifier.db['languages']);
-	frequency = discretizeFreq( googleSearch(dstTxt) );
-	textSize = len(srcTxt);
+	trnset = examples[:trnprt];
+	tstset = examples[tstprt:];
+	classifier = makeClassifier(trnset);
 
-	label, prob = classifier.predict( [textSize, frequency, src_id, dst_id] );
-	prediction = ''; prob *= 100; #convert prob into a percentage
-	if label == 1: prediction = 'good';
-	else: prediction = 'bad';
+	falses = 0.0;
+	for e in tstset:
+		label, prob = classifier.predict( e[:-1] );
+		prob *= 100;
 
-	print '\n>> source text: %s' % srcTxt;
-	print '>> translated text: %s' % dstTxt;
-	print '>> Predicted translation type: %s' % prediction;
-	print '>> Prediction confidence percentage of', prob;
+		print 'expected output: %d\t|predicted output: %d\t|confidence lvl: %f' % (label, e[-1], prob);
+		if (label != e[-1]):
+			falses += 1;
+
+	print '\n>> Prediction accuracy is: %f' % (1 - falses/(size-trnprt))
+	print '\n>> For %d training examples and %d testing examples' % (len(trnset), len(tstset))
+	print '\n>> Overall data size is %d' % size;
+
 
 #if-condition executes main functions when file used directly
 if __name__ == '__main__':
