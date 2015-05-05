@@ -2,7 +2,7 @@
 
 Intro
 -----
-This project takes a machine learning approach to evaluating translation application. The objective for this is to provide users of automated translation applications some level of confidence when using them. Currently, the "engine" relies on a single machine learning algorithm (Naive Bayes), but future updates will include additional learners which can be located within the "Predictors.py" file. The project's goal is to obtain a deeper understanding of machine learning (hence coding algorithms from scratch) and exercise python hacking skills, all while talking a practical problem. If you find any type issues with the software please feel free to contact me, any feedback is appreciate. 
+This project takes a machine learning approach to evaluating translation application. The objective for this is to provide users of automated translation applications some level of confidence when using them. Currently, the "engine" relies on a single machine learning algorithm (Naive Bayes), but future updates will include additional learners which can be located within the "Predictors.py" file. The project's goal is to obtain a  understanding of machine learning (hence coding algorithms from scratch) and exercise python hacking skills, all while talking a practical problem. If you find any type issues with the software please feel free to contact me, any feedback is appreciate. 
 
 Overview
 --------
@@ -48,6 +48,10 @@ Momentarily the training data is strucutred in the following format:
 * a sentence's frequency is discretized into 6 possible ranges it can fall under; 1 being very low 6 being very high
 * Equilibrium Score is the percentage of the original text that remains after a reverse translation. For example consider the srcText "I like cats", where L1 = English and L2 = some-arbitrary-language. If srcTxt is translated from L1 to L2 to produce dstText, passes the coherency 
 test, and then reversed translated (L2 to L1) which outputs “I love cats”, the equilibrium score is 7/11 ~ 0.63
+
+Predictions
+-----------
+Equilibrium scores are considered the target value for prediciton classifications. But due to the low training data 
 
 Testing the Engine
 ------------------

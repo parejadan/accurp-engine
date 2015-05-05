@@ -8,12 +8,12 @@ import os, urllib, json, time;
 os_brack = '/'; #directory separator for os engine is running on
 categories = [1250, 4500, 8000, 16000, 35000];
 
-def loadData(datSRC, delim, typ):
-	return loadtxt(datSRC, delimiter=delim, dtype = typ);
+def loadData(datSRC, path, delim, typ):
+	return loadtxt(path + os_brack + datSRC, delimiter=delim, dtype = typ);
 
-def saveRawInput(rawInput):
+def saveRawInput(rawInput, dst = '.'):
 	'save user input for reuse as future training data'
-	datName ='collected-data.csv';
+	datName = dst + os_brack + 'collected-data.csv';
 	f = open(datName, 'a');
 	f.write(rawInput);
 	f.close();
@@ -72,7 +72,7 @@ def main():
 
 	#classifier = loadClassifier();
 	#if classifier is None:
-	examples = loadData('resources/examples2-rand.csv', ',', float);
+	examples = loadData('examples2-rand.csv', '../training-data', ',', float);
 	examples = discretizeTarget(examples, 0.60); #60% tollerance level for coherency test
 	size = len(examples);
 	trnprt = size/4.0;
@@ -87,7 +87,7 @@ def main():
 		label, prob = classifier.predict( e[:-1] );
 		prob *= 100;
 
-		print 'expected output: %d\t|predicted output: %d\t|confidence lvl: %f' % (label, e[-1], prob);
+		#print 'expected output: %d\t|predicted output: %d\t|confidence lvl: %f' % (label, e[-1], prob);
 		if (label != e[-1]):
 			falses += 1;
 
