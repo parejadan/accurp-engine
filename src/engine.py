@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from numpy import loadtxt, append, array;
+from numpy import loadtxt, append, array, arange;
 from predictors import NaiveBayes;
 from pickle import load, dump;
 from sys import argv;
@@ -11,11 +11,9 @@ categories = [1250, 4500, 8000, 16000, 35000];
 def loadData(datSRC, path, delim, typ):
 	return loadtxt(path + os_brack + datSRC, delimiter=delim, dtype = typ);
 
-def saveRawInput(rawInput, dst = '.'):
-	'save user input for reuse as future training data'
-	datName = dst + os_brack + 'collected-data.csv';
-	f = open(datName, 'a');
-	f.write(rawInput);
+def saveData(data, name, svType,dst = '.'):
+	f = open( dst + os_brack + name , svType);
+	f.write(data);
 	f.close();
 
 def googleSearch(search):
@@ -81,10 +79,12 @@ def testClassifier(examples, trnprt, tstprt, size):
 		if (label != e[-1]):
 			falses += 1;
 
-	print '\n>> Training data dimensions: %d' % ( len(examples[0][:-1]) )
-	print '>> Prediction accuracy is: %f' % (1 - falses/(size-trnprt))
-	print '>> For %d training examples and %d testing examples' % (len(trnset), len(tstset))
-	print '>> Overall data size is %d\n\n' % size;
+	#print '\n>> Training data dimensions: %d' % ( len(examples[0][:-1]) )
+	#print '>> Prediction accuracy is: %f' % (1 - falses/(size-trnprt))
+	#print '>> For %d training examples and %d testing examples' % (len(trnset), len(tstset))
+	#print '>> Overall data size is %d\n\n' % size;
+
+	return (1 - falses/(size-trnprt));
 
 
 def main():
@@ -92,16 +92,27 @@ def main():
 	#classifier = loadClassifier();
 	#if classifier is None:
 	datOrder = 'random'
-	for i in range(1,4):
-		path = '..' + os_brack +'training-data' + os_brack + '%d-dimensional' % (i+1);
-		#print path
-		examples = loadData('data-%s.csv' % datOrder, path, ',', float);
-		examples = discretizeTarget(examples, 0.68); #60% tollerance level for coherency test
+	plotDat = '';
+	for j in arange(0.5, 1, 0.1): #threashold increases
+		for k in arange(2.0,6): #training data decreases
+			plotDat += '%f,%f,' % ((1/k), j);
 
-		size = len(examples);
-		trnprt = size/4.0;
-		tstprt = trnprt;
-		testClassifier(examples, trnprt, tstprt, size);
+			for i in range(1,4): #dimensions increase
+				path = '..' + os_brack +'training-data' + os_brack + '%d-dimensional' % (i+1);
+				#print path
+				examples = loadData('data-%s.csv' % datOrder, path, ',', float);
+				examples = discretizeTarget(examples, j);
+				size = len(examples);
+
+				trnprt = size/k;
+				tstprt = trnprt;
+				accuracy = testClassifier(examples, trnprt, tstprt, size);
+
+				plotDat += '%f ' % (accuracy);
+			plotDat += '\n';
+
+
+	saveData(plotDat, 'data.dat', 'w');
 	print 'data organization is %s\n' % datOrder;
 
 

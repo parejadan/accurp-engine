@@ -1,0 +1,19 @@
+set xlabel 'Coherency Threshold'
+set ylabel '% of Data for Training'
+set zlabel 'Prediction Accuracy'
+
+set grid noxtics noytics ztics
+
+set hidden3d
+set dgrid3d 50,50 qnorm 2
+set ticslevel0
+
+show view
+set output 'plot.png'
+
+set title 'Classifier Analysis with Varying Training and Testing Data'
+set key above
+
+splot 'data.dat' u 1:2:3 title '2-dimensions' with lines, \
+'data.dat' u 1:2:4 title '3-dimensions' with lines, \
+'data.dat' u 1:2:5 title '4-dimensions' with lines
