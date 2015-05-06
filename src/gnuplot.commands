@@ -1,15 +1,14 @@
-set xlabel 'Coherency Threshold'
-set ylabel '% of Data for Training'
+set xlabel '% of Data for Training'
+set ylabel 'Coherency Threshold'
 set zlabel 'Prediction Accuracy'
 
 set grid noxtics noytics ztics
 
 set hidden3d
-set dgrid3d 50,50 qnorm 2
+set dgrid3d 60,60 qnorm 2
 set ticslevel0
 
 show view
-set output 'plot.png'
 
 set title 'Classifier Analysis with Varying Training and Testing Data'
 set key above
