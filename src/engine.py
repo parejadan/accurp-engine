@@ -67,17 +67,7 @@ def discretizeLang(lang, languages):
 		index += 1;
 	return None;
 
-
-def main():
-
-	#classifier = loadClassifier();
-	#if classifier is None:
-	examples = loadData('examples2-rand.csv', '../training-data', ',', float);
-	examples = discretizeTarget(examples, 0.60); #60% tollerance level for coherency test
-	size = len(examples);
-	trnprt = size/4.0;
-	tstprt = trnprt;
-
+def testClassifier(examples, trnprt, tstprt, size):
 	trnset = examples[:trnprt];
 	tstset = examples[tstprt:];
 	classifier = makeClassifier(trnset);
@@ -91,9 +81,29 @@ def main():
 		if (label != e[-1]):
 			falses += 1;
 
-	print '\n>> Prediction accuracy is: %f' % (1 - falses/(size-trnprt))
-	print '\n>> For %d training examples and %d testing examples' % (len(trnset), len(tstset))
-	print '\n>> Overall data size is %d' % size;
+	print '\n>> Training data dimensions: %d' % ( len(examples[0][:-1]) )
+	print '>> Prediction accuracy is: %f' % (1 - falses/(size-trnprt))
+	print '>> For %d training examples and %d testing examples' % (len(trnset), len(tstset))
+	print '>> Overall data size is %d\n\n' % size;
+
+
+def main():
+
+	#classifier = loadClassifier();
+	#if classifier is None:
+	datOrder = 'random'
+	for i in range(1,4):
+		path = '..' + os_brack +'training-data' + os_brack + '%d-dimensional' % (i+1);
+		#print path
+		examples = loadData('data-%s.csv' % datOrder, path, ',', float);
+		examples = discretizeTarget(examples, 0.68); #60% tollerance level for coherency test
+
+		size = len(examples);
+		trnprt = size/4.0;
+		tstprt = trnprt;
+		testClassifier(examples, trnprt, tstprt, size);
+	print 'data organization is %s\n' % datOrder;
+
 
 
 #if-condition executes main functions when file used directly
