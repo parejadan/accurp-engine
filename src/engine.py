@@ -95,7 +95,7 @@ def main():
 	plotDat = '';
 	for j in arange(0.5, 1, 0.1): #threashold increases
 		for k in arange(2.0,6): #training data decreases
-			plotDat += '%f,%f,' % ((1/k), j);
+			plotDat += '%f %f ' % ((1/k), j);
 
 			for i in range(1,4): #dimensions increase
 				path = '..' + os_brack +'training-data' + os_brack + '%d-dimensional' % (i+1);
@@ -112,7 +112,7 @@ def main():
 			plotDat += '\n';
 
 
-	saveData(plotDat, 'data.dat', 'w');
+	saveData(plotDat, ('plot-%s.dat' % datOrder), 'w');
 	print 'data organization is %s\n' % datOrder;
 
 
