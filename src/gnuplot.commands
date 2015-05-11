@@ -10,9 +10,30 @@ set ticslevel0
 
 show view
 
-set title 'Classifier Analysis with Varying Training and Testing Data'
+set title 'Prediction Analysis with Varying Training and Testing Data'
 set key above
 
-splot 'plot-sorted.dat' u 1:2:3 title '2-dimensions' with lines, \
-'plot-sorted.dat' u 1:2:4 title '3-dimensions' with lines, \
-'plot-sorted.dat' u 1:2:5 title '4-dimensions' with lines
+splot 'acur-random.dat' u 1:2:3 title '2-dimensions' with lines, \
+'acur-random.dat' u 1:2:4 title '3-dimensions' with lines, \
+'acur-random.dat' u 1:2:5 title '4-dimensions' with lines
+
+
+########################################################
+set xlabel '% of Data for Training'
+set ylabel 'Word Equivalance Threshold'
+set zlabel 'Confidence Level'
+
+set grid noxtics noytics ztics
+
+set hidden3d
+set dgrid3d 60,60 qnorm 2
+set ticslevel0
+
+show view
+
+set title 'Confidence Analysis with Varying Training and Testing Data'
+set key above
+
+splot 'conf-random.dat' u 1:2:3 title '2-dimensions' with lines, \
+'conf-random.dat' u 1:2:4 title '3-dimensions' with lines, \
+'conf-random.dat' u 1:2:5 title '4-dimensions' with lines

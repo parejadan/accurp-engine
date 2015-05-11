@@ -8,7 +8,7 @@ Overview
 --------
 The original raw data was collected by a group of classmates from my AI-2 class. Which was then shared with the rest of the class for the use as a unit-project for the course. I studied the raw data and defined a few features to then feed it to a learner. 
 
-NOTE: The following description for the training data is my interpretation from what was explain to me. There were some fuzzy areas I had to clarify on own which lead to some alterations. Also, the training data on this repository is a discretized version of it.
+NOTE: The following description for the training data is my interpretation from what was explain to me. There were some fuzzy areas I had to clarify on my own which lead to some alterations. Also, the training data on this repository is a discretized version of it.
 
 So what is the data exactly? In a nutshell the data is a collection of everyday conversational sentences. For example, the type of sentences one exchanges with a waiter when ordering food at a restaurant, or asking a stranger for directions. We focus on these low complexity sentences so to assure a high quantity and variety in the data for varying languages.
 

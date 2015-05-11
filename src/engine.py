@@ -71,9 +71,10 @@ def testClassifier(examples, trnprt, tstprt, size):
 	classifier = makeClassifier(trnset);
 
 	falses = 0.0;
+	avgLvl = 0.0;
 	for e in tstset:
 		label, prob = classifier.predict( e[:-1] );
-		prob *= 100;
+		avgLvl += prob * 100;
 
 		#print 'expected output: %d\t|predicted output: %d\t|confidence lvl: %f' % (label, e[-1], prob);
 		if (label != e[-1]):
@@ -84,7 +85,7 @@ def testClassifier(examples, trnprt, tstprt, size):
 	#print '>> For %d training examples and %d testing examples' % (len(trnset), len(tstset))
 	#print '>> Overall data size is %d\n\n' % size;
 
-	return (1 - falses/(size-trnprt));
+	return (1 - falses/(size-trnprt)), (avgLvl/len(tstset));
 
 
 def main():
@@ -92,10 +93,12 @@ def main():
 	#classifier = loadClassifier();
 	#if classifier is None:
 	datOrder = 'random'
-	plotDat = '';
+	accurDat = '';
+	confiDat = '';
 	for j in arange(0.5, 1, 0.1): #threashold increases
 		for k in arange(2.0,6): #training data decreases
-			plotDat += '%f %f ' % ((1/k), j);
+			accurDat += '%f %f ' % ((1/k), j);
+			confiDat += '%f %f ' % ((1/k), j);
 
 			for i in range(1,4): #dimensions increase
 				path = '..' + os_brack +'training-data' + os_brack + '%d-dimensional' % (i+1);
@@ -106,13 +109,16 @@ def main():
 
 				trnprt = size/k;
 				tstprt = trnprt;
-				accuracy = testClassifier(examples, trnprt, tstprt, size);
+				accuracy, confidence = testClassifier(examples, trnprt, tstprt, size);
 
-				plotDat += '%f ' % (accuracy);
-			plotDat += '\n';
+				accurDat += '%f ' % (accuracy);
+				confiDat += '%f ' % (confidence);
+			accurDat += '\n';
+			confiDat += '\n';
 
 
-	saveData(plotDat, ('plot-%s.dat' % datOrder), 'w');
+	saveData(accurDat, ('acur-%s.dat' % datOrder), 'w');
+	saveData(confiDat, ('conf-%s.dat' % datOrder), 'w');
 	print 'data organization is %s\n' % datOrder;
 
 
