@@ -94,12 +94,8 @@ def getRequest():
 
 @app.route('/predict', methods=['POST'])
 def handleRequest():
-
 	#get user input
-	srcTxt = request.form['srcTxt']
-	dstTxt = request.form['dstTxt']
-	srcLng = request.form['srcLng']
-	dstLng = request.form['dstLng']
+	srcTxt, dstTxt, srcLng, dstLng = request.form['srcTxt'], request.form['dstTxt'], request.form['srcLng'], request.form['dstLng']
 
 	#setup classifier
 	thresh = 0.65
