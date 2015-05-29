@@ -4,8 +4,10 @@ from predictors import NaiveBayes;
 from pickle import load, dump;
 from sys import argv;
 import os, urllib, json, time;
+from flask import Flask, render_template, request
 
 os_brack = '/'; #directory separator for os engine is running on
+app = Flask(__name__); #define file as main for server use
 
 def loadData(datSRC, path, delim, typ):
 	return loadtxt(path + os_brack + datSRC, delimiter=delim, dtype = typ);
@@ -18,6 +20,7 @@ def saveData(data, name, svType,dst = '.'):
 def googleSearch(search):
 	'google search api'
 	query = "http://ajax.googleapis.com/ajax/services/search/web?v=1.0&q=%s";#search api? free to use
+	print "\n\n\n%s\n%s\n\n\n\n" % (( query % (search) ), type(( query % (search) )))
 	results = urllib.urlopen( query % (search) );
 	json_res = json.loads( results.read() );
 	return int(json_res['responseData']['cursor']['estimatedResultCount']); #returns number of estimated search results
@@ -90,7 +93,18 @@ def testClassifier(examples, trnprt, tstprt, size):
 def getWordCountDif(txt1, txt2, delim =' '):
 	return abs( len(txt1.split(delim)) - len(txt2.split(delim)) );
 
-def main():
+@app.route('/')
+def getRequest():
+	return render_template('index.html');
+
+@app.route('/predict', methods=['POST'])
+def handleRequest():
+
+	#get user input
+	srcTxt = request.form['srcTxt'];
+	dstTxt = request.form['dstTxt'];
+	srcLng = request.form['srcLng'];
+	dstLng = request.form['dstLng'];
 
 	#setup classifier
 	thresh = 0.65;
@@ -103,13 +117,6 @@ def main():
 		trnset = examples[:trnprt];
 		classifier = makeClassifier(trnset);
 
-	#junk -> name of this python file, not needed but automatically passed by interpreter 
-	#srcTxt -> source text user translated
-	#dstTxt -> translated text
-	#srcLng -> language of source txt
-	#dstTtxt -> language source text was translated to
-	#srcTxt, dstTxt, srcLng, dstLng = loadData(argv[1], '../input', '\n', str); #use this interface for basic testing
-	junk, srcTxt, dstTxt, srcLng, dstLng = argv; #use this interface for production
 
 	#setup input data
 	frequency = discretizeFreq( googleSearch(dstTxt) );
@@ -122,13 +129,18 @@ def main():
 	if label == 1: prediction = 'good';
 	else: prediction = 'bad';
 
-	#display prediction
-	print '\nPredicted translation type: %s' % prediction;
-	print 'Prediction confidence percentage: %f' % prob;
-	print 'Classifier\'s word-to-word equivalence threshold percentage %f\n' % (thresh * 100);
+	rtn = """\
+		Prediction translation type: %s
+		Prediction confidence percentage: %f
+		Classifier's word-to-word equivalence threshold percentage %s
+	""" % ( prediction, prob, (thresh * 100) );
+
+	return 'rtn';
 
 if __name__ == '__main__':
-	main();
+	app.debug = True
+	app.run();
+
 
 
 #################Code reserved for classifier intensive testing################## 
